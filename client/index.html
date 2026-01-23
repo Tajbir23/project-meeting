@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting - Google Meet স্টাইল ভিডিও কলিং</title>
+    <meta name="description" content="প্রফেশনাল ভিডিও কনফারেন্সিং সিস্টেম">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- ===== Landing Page ===== -->
+    <div class="landing-container">
+        <!-- Left Section - Hero -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">ভিডিও মিটিং</span>
+                    <br>এখন আরও সহজ
+                </h1>
+                <p class="hero-subtitle">
+                    উচ্চ মানের ভিডিও কল, স্ক্রিন শেয়ার এবং 
+                    রিয়েল-টাইম কোলাবোরেশন - সবকিছু এক জায়গায়।
+                </p>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="material-icons-round">hd</span>
+                        <span>HD ভিডিও কোয়ালিটি</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="material-icons-round">speed</span>
+                        <span>কোনো বাফারিং নেই</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="material-icons-round">groups</span>
+                        <span>গ্রুপ কল সাপোর্ট</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="material-icons-round">security</span>
+                        <span>এন্ড-টু-এন্ড সিকিউর</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Animated Background -->
+            <div class="hero-bg-animation">
+                <div class="circle circle-1"></div>
+                <div class="circle circle-2"></div>
+                <div class="circle circle-3"></div>
+            </div>
+        </div>
+        
+        <!-- Right Section - Join Form -->
+        <div class="join-section">
+            <div class="join-card">
+                <div class="join-header">
+                    <div class="logo">
+                        <span class="material-icons-round">videocam</span>
+                    </div>
+                    <h2>মিটিং-এ যোগ দিন</h2>
+                    <p>নতুন মিটিং তৈরি করুন অথবা কোডে যোগ দিন</p>
+                </div>
+                
+                <form id="joinForm" class="join-form">
+                    <!-- User Name -->
+                    <div class="input-group">
+                        <span class="material-icons-round input-icon">person</span>
+                        <input 
+                            type="text" 
+                            id="userName" 
+                            placeholder="আপনার নাম"
+                            required
+                            autocomplete="name"
+                        >
+                    </div>
+                    
+                    <!-- Room Code -->
+                    <div class="input-group">
+                        <span class="material-icons-round input-icon">meeting_room</span>
+                        <input 
+                            type="text" 
+                            id="roomCode" 
+                            placeholder="মিটিং কোড (যেমন: abc-xyz-123)"
+                            pattern="[a-zA-Z0-9\-]+"
+                            autocomplete="off"
+                        >
+                        <button type="button" id="generateCodeBtn" class="generate-btn" title="নতুন কোড তৈরি করুন">
+                            <span class="material-icons-round">autorenew</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Preview Section -->
+                    <div class="preview-container">
+                        <video id="localPreview" autoplay muted playsinline></video>
+                        <div class="preview-placeholder" id="previewPlaceholder">
+                            <span class="material-icons-round">videocam_off</span>
+                            <p>ক্যামেরা চালু করুন</p>
+                        </div>
+                        <div class="preview-controls">
+                            <button type="button" id="togglePreviewMic" class="preview-btn active" title="মাইক্রোফোন">
+                                <span class="material-icons-round">mic</span>
+                            </button>
+                            <button type="button" id="togglePreviewCam" class="preview-btn active" title="ক্যামেরা">
+                                <span class="material-icons-round">videocam</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Buttons -->
+                    <div class="submit-buttons">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="material-icons-round">video_call</span>
+                            মিটিং শুরু করুন
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Info Text -->
+                <div class="join-footer">
+                    <p>
+                        <span class="material-icons-round">info</span>
+                        আপনার ক্যামেরা ও মাইক্রোফোন অ্যাক্সেস দিতে হবে
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span class="toast-icon material-icons-round"></span>
+        <span class="toast-message"></span>
+    </div>
+    
+    <script type="module" src="/js/main.js"></script>
+</body>
+</html>

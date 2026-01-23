@@ -1,0 +1,23 @@
+{
+  "name": "meeting-server",
+  "version": "1.0.0",
+  "description": "Google Meet-like video calling server with WebRTC and mediasoup",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mediasoup": "^3.13.0",
+    "selfsigned": "^5.4.0",
+    "socket.io": "^4.7.2",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>মিটিং চলছে...</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="meeting-page">
+    <!-- ===== Meeting Room ===== -->
+    <div class="meeting-container">
+        
+        <!-- Top Bar -->
+        <header class="meeting-header">
+            <div class="header-left">
+                <div class="meeting-info">
+                    <span class="material-icons-round">lock</span>
+                    <span class="meeting-code" id="meetingCode">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <div class="meeting-timer" id="meetingTimer">00:00</div>
+            </div>
+            
+            <div class="header-right">
+                <button class="icon-btn" id="toggleChatBtn" title="চ্যাট">
+                    <span class="material-icons-round">chat</span>
+                    <span class="badge" id="chatBadge"></span>
+                </button>
+                <button class="icon-btn" id="toggleParticipantsBtn" title="অংশগ্রহণকারী">
+                    <span class="material-icons-round">people</span>
+                    <span class="participant-count" id="participantCount">1</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Video Grid -->
+        <main class="video-grid-container">
+            <div class="video-grid" id="videoGrid">
+                <!-- Local Video (আমার ভিডিও) -->
+                <div class="video-tile local-video" id="localVideoTile">
+                    <video id="localVideo" autoplay muted playsinline></video>
+                    <div class="video-placeholder" id="localPlaceholder">
+                        <div class="avatar">
+                            <span id="localAvatarText">ME</span>
+                        </div>
+                    </div>
+                    <div class="video-label">
+                        <span class="user-name" id="localUserName">আপনি</span>
+                        <span class="mute-indicator" id="localMuteIndicator">
+                            <span class="material-icons-round">mic_off</span>
+                        </span>
+                    </div>
+                    <div class="pin-btn" title="পিন করুন">
+                        <span class="material-icons-round">push_pin</span>
+                    </div>
+                </div>
+                
+                <!-- Remote videos will be added here dynamically -->
+            </div>
+            
+            <!-- Screen Share View (when active) -->
+            <div class="screen-share-container" id="screenShareContainer" style="display: none;">
+                <video id="screenShareVideo" autoplay playsinline></video>
+                <div class="screen-share-label">
+                    <span class="material-icons-round">screen_share</span>
+                    <span id="screenShareUser">কেউ স্ক্রিন শেয়ার করছে</span>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Control Bar -->
+        <footer class="control-bar">
+            <div class="controls-left">
+                <div class="meeting-time-mobile" id="meetingTimerMobile">00:00</div>
+            </div>
+            
+            <div class="controls-center">
+                <!-- Microphone Toggle -->
+                <button class="control-btn" id="toggleMic" title="মাইক্রোফোন (M)">
+                    <span class="material-icons-round icon-on">mic</span>
+                    <span class="material-icons-round icon-off">mic_off</span>
+                    <span class="btn-label">মাইক</span>
+                </button>
+                
+                <!-- Camera Toggle -->
+                <button class="control-btn" id="toggleCamera" title="ক্যামেরা (V)">
+                    <span class="material-icons-round icon-on">videocam</span>
+                    <span class="material-icons-round icon-off">videocam_off</span>
+                    <span class="btn-label">ক্যামেরা</span>
+                </button>
+                
+                <!-- Screen Share -->
+                <button class="control-btn" id="toggleScreenShare" title="স্ক্রিন শেয়ার (S)">
+                    <span class="material-icons-round icon-on">present_to_all</span>
+                    <span class="material-icons-round icon-off">cancel_presentation</span>
+                    <span class="btn-label">শেয়ার</span>
+                </button>
+                
+                <!-- More Options -->
+                <button class="control-btn" id="moreOptions" title="আরও অপশন">
+                    <span class="material-icons-round">more_vert</span>
+                    <span class="btn-label">আরও</span>
+                </button>
+                
+                <!-- Leave Call -->
+                <button class="control-btn leave-btn" id="leaveCall" title="কল ছেড়ে দিন">
+                    <span class="material-icons-round">call_end</span>
+                    <span class="btn-label">বের হন</span>
+                </button>
+            </div>
+            
+            <div class="controls-right">
+                <!-- Picture in Picture -->
+                <button class="icon-btn-small" id="pipBtn" title="Picture-in-Picture">
+                    <span class="material-icons-round">picture_in_picture_alt</span>
+                </button>
+                <!-- Fullscreen -->
+                <button class="icon-btn-small" id="fullscreenBtn" title="ফুলস্ক্রিন">
+                    <span class="material-icons-round">fullscreen</span>
+                </button>
+            </div>
+        </footer>
+        
+        <!-- Side Panel (Chat/Participants) -->
+        <aside class="side-panel" id="sidePanel">
+            <!-- Panel Tabs -->
+            <div class="panel-tabs">
+                <button class="panel-tab active" data-panel="participants">
+                    <span class="material-icons-round">people</span>
+                    অংশগ্রহণকারী
+                </button>
+                <button class="panel-tab" data-panel="chat">
+                    <span class="material-icons-round">chat</span>
+                    চ্যাট
+                </button>
+            </div>
+            
+            <!-- Participants Panel -->
+            <div class="panel-content" id="participantsPanel">
+                <div class="panel-header">
+                    <h3>অংশগ্রহণকারী (<span id="participantCountPanel">1</span>)</h3>
+                </div>
+                <div class="participants-list" id="participantsList">
+                    <!-- Participants will be added here -->
+                </div>
+            </div>
+            
+            <!-- Chat Panel -->
+            <div class="panel-content" id="chatPanel" style="display: none;">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-welcome">
+                        <span class="material-icons-round">chat_bubble_outline</span>
+                        <p>এখানে সবার সাথে চ্যাট করুন</p>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" placeholder="মেসেজ লিখুন..." autocomplete="off">
+                    <button class="send-btn" id="sendChatBtn">
+                        <span class="material-icons-round">send</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Close Panel Button -->
+            <button class="close-panel-btn" id="closePanelBtn">
+                <span class="material-icons-round">close</span>
+            </button>
+        </aside>
+    </div>
+    
+    <!-- More Options Menu -->
+    <div class="dropdown-menu" id="moreOptionsMenu">
+        <button class="menu-item" id="copyLinkBtn">
+            <span class="material-icons-round">link</span>
+            মিটিং লিংক কপি করুন
+        </button>
+        <button class="menu-item" id="settingsBtn">
+            <span class="material-icons-round">settings</span>
+            সেটিংস
+        </button>
+        <button class="menu-item" id="reportBtn">
+            <span class="material-icons-round">bug_report</span>
+            সমস্যা রিপোর্ট করুন
+        </button>
+    </div>
+    
+    <!-- Connection Status Overlay -->
+    <div class="connection-overlay" id="connectionOverlay" style="display: none;">
+        <div class="connection-content">
+            <div class="spinner"></div>
+            <p id="connectionStatus">সংযোগ করা হচ্ছে...</p>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span class="toast-icon material-icons-round"></span>
+        <span class="toast-message"></span>
+    </div>
+    
+    <!-- Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="/js/meeting.js"></script>
+</body>
+</html>
