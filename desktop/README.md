@@ -14,7 +14,7 @@
 cd desktop
 npm install
 ```
-
+t
 ### ২. ডেভেলপমেন্ট মোডে চালান
 
 ```bash
