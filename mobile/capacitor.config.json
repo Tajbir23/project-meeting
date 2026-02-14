@@ -1,0 +1,32 @@
+{
+  "appId": "com.quickmeet.app",
+  "appName": "QuickMeet",
+  "webDir": "www",
+  "server": {
+    "url": "https://quickmeet.genuinesoftmart.store",
+    "cleartext": true,
+    "allowNavigation": [
+      "quickmeet.genuinesoftmart.store",
+      "*.genuinesoftmart.store"
+    ]
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": true,
+      "backgroundColor": "#0f0f23",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": true,
+      "spinnerColor": "#667eea"
+    },
+    "StatusBar": {
+      "backgroundColor": "#0f0f23",
+      "style": "DARK"
+    }
+  },
+  "android": {
+    "allowMixedContent": true,
+    "webContentsDebuggingEnabled": true
+  }
+}

@@ -53,6 +53,14 @@ app.get('/meeting/:roomId', (req, res) => {
     res.sendFile(join(clientPath, 'meeting.html'));
 });
 
+app.get('/transfer', (req, res) => {
+    res.sendFile(join(clientPath, 'transfer.html'));
+});
+
+app.get('/transfer/:roomId', (req, res) => {
+    res.sendFile(join(clientPath, 'transfer.html'));
+});
+
 // Signaling
 setupSignaling(io);
 

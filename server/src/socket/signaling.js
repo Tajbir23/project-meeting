@@ -215,6 +215,73 @@ export function setupSignaling(io, mediasoupManager = null) {
                 timestamp: new Date().toISOString()
             });
         });
+
+        // ====================================================
+        // ===== P2P ফাইল ট্রান্সফার সিগনালিং ================
+        // ====================================================
+
+        /**
+         * ফাইল অফার - Sender → Receiver
+         * signaling server শুধু মেটাডেটা relay করে
+         * আসল ফাইল ডেটা WebRTC DataChannel দিয়ে P2P যায়
+         */
+        socket.on('file-offer', (data) => {
+            const { targetId, fileId, fileName, fileSize, fileType, totalChunks, chunkSize } = data;
+            console.log(`📁 ফাইল অফার: ${socket.id} → ${targetId} (${fileName})`);
+            
+            io.to(targetId).emit('file-offer', {
+                senderId: socket.id,
+                fileId,
+                fileName,
+                fileSize,
+                fileType,
+                totalChunks,
+                chunkSize,
+            });
+        });
+
+        /**
+         * ফাইল রেসপন্স - Receiver গ্রহণ/বাতিল করে
+         */
+        socket.on('file-response', (data) => {
+            const { targetId, fileId, accepted } = data;
+            console.log(`📁 ফাইল রেসপন্স: ${fileId} - ${accepted ? '✅ গ্রহণ' : '❌ বাতিল'}`);
+            
+            io.to(targetId).emit('file-response', {
+                senderId: socket.id,
+                fileId,
+                accepted,
+            });
+        });
+
+        /**
+         * ফাইল Resume - Receiver জানায় কোন chunks বাকি
+         */
+        socket.on('file-resume', (data) => {
+            const { targetId, fileId, missingChunks, fileName } = data;
+            console.log(`📁 ফাইল Resume: ${fileId} - ${missingChunks.length} chunks বাকি`);
+            
+            io.to(targetId).emit('file-resume', {
+                senderId: socket.id,
+                fileId,
+                missingChunks,
+                fileName,
+            });
+        });
+
+        /**
+         * ফাইল ট্রান্সফার বাতিল
+         */
+        socket.on('file-cancel', (data) => {
+            const { targetId, fileId, reason } = data;
+            console.log(`📁 ফাইল বাতিল: ${fileId} - ${reason}`);
+            
+            io.to(targetId).emit('file-cancel', {
+                senderId: socket.id,
+                fileId,
+                reason,
+            });
+        });
         
         /**
          * রুম ছেড়ে যাওয়া
@@ -222,13 +289,70 @@ export function setupSignaling(io, mediasoupManager = null) {
         socket.on('leave-room', () => {
             handleUserLeave(socket, io);
         });
+
+        // ====================================================
+        // ===== স্ট্যান্ডঅ্যালোন ফাইল ট্রান্সফার রুম =========
+        // ====================================================
+
+        /**
+         * ফাইল ট্রান্সফার রুমে জয়েন
+         * মিটিং ছাড়াই শুধু ফাইল আদান-প্রদানের জন্য
+         */
+        socket.on('join-transfer-room', (data, callback) => {
+            try {
+                const { roomId, userName } = data;
+                const transferRoomId = `transfer-${roomId}`;
+
+                console.log(`📁 ফাইল ট্রান্সফার জয়েন: ${userName} → ${roomId}`);
+
+                // রুম manager ব্যবহার করি (same as meeting)
+                const room = joinRoom(transferRoomId, socket.id, { name: userName });
+                socket.join(transferRoomId);
+
+                const existingUsers = getRoomUsers(transferRoomId).filter(u => u.id !== socket.id);
+                const userCount = getRoomSize(transferRoomId);
+
+                // অন্যদের জানাই
+                socket.to(transferRoomId).emit('transfer-user-joined', {
+                    userId: socket.id,
+                    userName,
+                    userCount,
+                });
+
+                if (callback) {
+                    callback({
+                        success: true,
+                        roomId,
+                        userId: socket.id,
+                        existingUsers: existingUsers.map(u => ({ id: u.id, name: u.name })),
+                        userCount,
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Transfer room join error:', error);
+                if (callback) callback({ success: false, error: error.message });
+            }
+        });
+
+        /**
+         * ফাইল ট্রান্সফার রুম ছাড়া
+         */
+        socket.on('leave-transfer-room', () => {
+            handleUserLeave(socket, io, 'transfer-user-left');
+        });
         
         /**
          * ডিসকানেক্ট (ব্রাউজার বন্ধ, নেট চলে গেছে ইত্যাদি)
          */
         socket.on('disconnect', (reason) => {
             console.log(`🔌 ডিসকানেক্ট: ${socket.id} (কারণ: ${reason})`);
-            handleUserLeave(socket, io);
+            // ট্রান্সফার রুম হলে আলাদা ইভেন্ট পাঠাই
+            const roomId = findUserRoom(socket.id);
+            if (roomId && roomId.startsWith('transfer-')) {
+                handleUserLeave(socket, io, 'transfer-user-left');
+            } else {
+                handleUserLeave(socket, io);
+            }
         });
     });
 }
@@ -239,7 +363,7 @@ export function setupSignaling(io, mediasoupManager = null) {
  * @param {Object} socket - সকেট অবজেক্ট
  * @param {Object} io - Socket.IO সার্ভার
  */
-function handleUserLeave(socket, io) {
+function handleUserLeave(socket, io, eventName = 'user-left') {
     // ইউজার কোন রুমে ছিল খুঁজি
     const roomId = findUserRoom(socket.id);
     
@@ -248,7 +372,7 @@ function handleUserLeave(socket, io) {
         leaveRoom(roomId, socket.id);
         
         // অন্যদের জানাই
-        socket.to(roomId).emit('user-left', {
+        socket.to(roomId).emit(eventName, {
             userId: socket.id,
             userCount: getRoomSize(roomId)
         });

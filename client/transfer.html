@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickMeet - ফাইল ট্রান্সফার</title>
+    <meta name="description" content="P2P ফাইল ট্রান্সফার - সরাসরি পাঠান, কোনো সার্ভার ছাড়া">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="transfer-page">
+
+    <div class="transfer-container">
+        
+        <!-- Header -->
+        <header class="transfer-header">
+            <a href="/" class="transfer-logo">
+                <span class="material-icons-round">swap_horiz</span>
+                <span>QuickMeet <strong>ফাইল ট্রান্সফার</strong></span>
+            </a>
+            <div class="transfer-room-info">
+                <span class="material-icons-round">lock</span>
+                <span id="transferRoomCode">Loading...</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="transfer-main">
+            
+            <!-- Left: My Info + Controls -->
+            <div class="transfer-panel transfer-send-panel">
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <span class="material-icons-round">person</span>
+                        <div>
+                            <h3 id="myNameDisplay">আপনি</h3>
+                            <span class="status-badge connected" id="myStatus">কানেক্টেড</span>
+                        </div>
+                    </div>
+
+                    <!-- File Drop Zone -->
+                    <div class="tf-drop-zone" id="tfDropZone">
+                        <input type="file" id="tfFileInput" multiple style="display:none">
+                        <span class="material-icons-round tf-drop-icon">cloud_upload</span>
+                        <h4>ফাইল সিলেক্ট করুন</h4>
+                        <p>ড্র্যাগ করুন অথবা ক্লিক করুন</p>
+                        <span class="tf-drop-hint">সর্বোচ্চ 2GB পর্যন্ত</span>
+                    </div>
+
+                    <!-- Selected Files -->
+                    <div class="tf-selected-files" id="tfSelectedFiles" style="display:none">
+                        <div class="tf-files-list" id="tfFilesList"></div>
+                        <div class="tf-recipient-row">
+                            <label>কাকে পাঠাবেন?</label>
+                            <select id="tfRecipientSelect">
+                                <option value="">— অপেক্ষায় —</option>
+                            </select>
+                        </div>
+                        <button class="tf-send-btn" id="tfSendBtn" disabled>
+                            <span class="material-icons-round">send</span>
+                            ফাইল পাঠান
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Transfer Activity -->
+            <div class="transfer-panel transfer-activity-panel">
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <span class="material-icons-round">swap_horiz</span>
+                        <h3>ট্রান্সফার</h3>
+                    </div>
+
+                    <div class="tf-transfers" id="tfTransfersList">
+                        <div class="tf-empty" id="tfEmptyState">
+                            <span class="material-icons-round">folder_open</span>
+                            <h4>কোনো ট্রান্সফার চলছে না</h4>
+                            <p>বাম পাশ থেকে ফাইল সিলেক্ট করে পাঠান</p>
+                        </div>
+                    </div>
+
+                    <!-- Share Link -->
+                    <div class="tf-share-section">
+                        <p>এই লিংক শেয়ার করুন:</p>
+                        <div class="tf-share-row">
+                            <input type="text" id="tfShareLink" readonly>
+                            <button class="tf-copy-btn" id="tfCopyLink" title="কপি করুন">
+                                <span class="material-icons-round">content_copy</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Peers / Connected Users -->
+            <div class="transfer-panel transfer-peers-panel">
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <span class="material-icons-round">people</span>
+                        <h3>কানেক্টেড (<span id="tfPeerCount">0</span>)</h3>
+                    </div>
+                    <div class="tf-peers-list" id="tfPeersList">
+                        <div class="tf-empty-peers">
+                            <span class="material-icons-round">person_add</span>
+                            <p>কেউ কানেক্ট করেনি<br>লিংক শেয়ার করুন</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- File Offer Modal -->
+    <div class="file-offer-modal" id="tfOfferModal" style="display:none">
+        <div class="file-offer-card">
+            <div class="file-offer-icon">
+                <span class="material-icons-round">description</span>
+            </div>
+            <h3 id="tfOfferTitle">ফাইল পাঠাতে চায়</h3>
+            <p id="tfOfferDetails"></p>
+            <div class="file-offer-actions">
+                <button class="file-offer-btn accept" id="tfOfferAccept">
+                    <span class="material-icons-round">check</span> গ্রহণ করুন
+                </button>
+                <button class="file-offer-btn reject" id="tfOfferReject">
+                    <span class="material-icons-round">close</span> বাতিল
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Overlay -->
+    <div class="connection-overlay" id="connectionOverlay" style="display:none">
+        <div class="connection-content">
+            <div class="spinner"></div>
+            <p id="connectionStatus">সংযোগ করা হচ্ছে...</p>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <span class="toast-icon material-icons-round"></span>
+        <span class="toast-message"></span>
+    </div>
+
+    <!-- Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="/js/transfer.js"></script>
+</body>
+</html>

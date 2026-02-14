@@ -1,0 +1,28 @@
+{
+  "name": "quickmeet-mobile",
+  "version": "1.0.0",
+  "description": "QuickMeet - ভিডিও মিটিং মোবাইল অ্যাপ (Capacitor)",
+  "main": "index.js",
+  "scripts": {
+    "build:web": "node scripts/build-web.js",
+    "cap:init": "npx cap init QuickMeet com.quickmeet.app --web-dir www",
+    "cap:add:android": "npx cap add android",
+    "cap:sync": "npx cap sync",
+    "cap:open:android": "npx cap open android",
+    "cap:run:android": "npx cap run android",
+    "android:build": "npm run build:web && npx cap sync android",
+    "android:open": "npm run android:build && npx cap open android",
+    "android:run": "npm run android:build && npx cap run android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.7.0",
+    "@capacitor/app": "^5.0.7",
+    "@capacitor/browser": "^5.2.0",
+    "@capacitor/core": "^5.7.0",
+    "@capacitor/splash-screen": "^5.0.7",
+    "@capacitor/status-bar": "^5.0.7"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.7.0"
+  }
+}

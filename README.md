@@ -57,8 +57,48 @@ project-meeting/
 │       ├── webrtc.js
 │       └── meeting.js
 │
+├── desktop/                # 🖥️ Windows Desktop App (Electron)
+│   ├── main.js             # Electron main process
+│   ├── preload.js          # IPC bridge
+│   ├── index.html          # Offline fallback
+│   ├── package.json        # Build config
+│   └── assets/             # App icons
+│
+├── mobile/                 # 📱 Android App (Capacitor)
+│   ├── capacitor.config.json
+│   ├── package.json
+│   ├── www/                # Web fallback
+│   └── android/            # Android project (auto-generated)
+│
 └── README.md
 ```
+
+## 🖥️ Windows Desktop App
+
+Electron দিয়ে native Windows .exe তৈরি করুন:
+
+```bash
+cd desktop
+npm install
+npm start          # ডেভেলপমেন্ট মোড
+npm run build      # .exe বিল্ড
+```
+
+বিস্তারিত: [desktop/README.md](desktop/README.md)
+
+## 📱 Android App
+
+Capacitor দিয়ে Android APK তৈরি করুন:
+
+```bash
+cd mobile
+npm install
+npx cap add android
+npx cap sync android
+npx cap open android    # Android Studio তে খুলবে
+```
+
+বিস্তারিত: [mobile/README.md](mobile/README.md)
 
 ## 🎮 কীবোর্ড শর্টকাট
 

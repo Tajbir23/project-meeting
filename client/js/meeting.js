@@ -11,10 +11,12 @@
  */
 
 import { WebRTCManager } from './webrtc.js';
+import { FileTransferManager, formatFileSize, TransferStatus } from './fileTransfer.js';
 
 // ===== গ্লোবাল ভেরিয়েবলস =====
 let socket = null;              // Socket.IO কানেকশন
 let webrtcManager = null;       // WebRTC ম্যানেজার
+let fileTransferManager = null; // ফাইল ট্রান্সফার ম্যানেজার
 let localStream = null;         // আমার ক্যামেরা/মাইক স্ট্রিম
 let screenStream = null;        // স্ক্রিন শেয়ার স্ট্রিম
 
@@ -89,7 +91,24 @@ const elements = {
     connectionStatus: document.getElementById('connectionStatus'),
     copyLinkBtn: document.getElementById('copyLinkBtn'),
     fullscreenBtn: document.getElementById('fullscreenBtn'),
-    pipBtn: document.getElementById('pipBtn')
+    pipBtn: document.getElementById('pipBtn'),
+
+    // ফাইল ট্রান্সফার
+    toggleFileTransfer: document.getElementById('toggleFileTransfer'),
+    filesPanel: document.getElementById('filesPanel'),
+    fileInput: document.getElementById('fileInput'),
+    fileDropZone: document.getElementById('fileDropZone'),
+    fileSelectArea: document.getElementById('fileSelectArea'),
+    fileRecipientArea: document.getElementById('fileRecipientArea'),
+    fileRecipientSelect: document.getElementById('fileRecipientSelect'),
+    fileSendBtn: document.getElementById('fileSendBtn'),
+    fileTransfersList: document.getElementById('fileTransfersList'),
+    fileEmptyState: document.getElementById('fileEmptyState'),
+    fileOfferModal: document.getElementById('fileOfferModal'),
+    fileOfferTitle: document.getElementById('fileOfferTitle'),
+    fileOfferDetails: document.getElementById('fileOfferDetails'),
+    fileOfferAccept: document.getElementById('fileOfferAccept'),
+    fileOfferReject: document.getElementById('fileOfferReject'),
 };
 
 // ===== টোস্ট নোটিফিকেশন =====
@@ -519,7 +538,18 @@ function setupWebRTC() {
             showToast('কানেক্টেড!', 'success');
         }
     };
+
+    // Remote DataChannel পেলে (ফাইল ট্রান্সফারের জন্য)
+    webrtcManager.onDataChannel = (userId, dataChannel) => {
+        if (dataChannel.label === 'file-transfer' && fileTransferManager) {
+            fileTransferManager.acceptDataChannel(userId, dataChannel);
+        }
+    };
     
+    // ===== ফাইল ট্রান্সফার ম্যানেজার সেটআপ =====
+    fileTransferManager = new FileTransferManager(socket, webrtcManager.peerConnections);
+    setupFileTransferUI();
+
     console.log('✅ WebRTC ম্যানেজার রেডি');
 }
 
@@ -799,6 +829,12 @@ function leaveCall() {
     if (webrtcManager) {
         webrtcManager.closeAllConnections();
     }
+
+    // ফাইল ট্রান্সফার বন্ধ
+    if (fileTransferManager) {
+        fileTransferManager.destroy();
+        fileTransferManager = null;
+    }
     
     // সকেট থেকে রুম ছাড়ি
     if (socket) {
@@ -856,6 +892,7 @@ function openSidePanel(panel) {
     // কন্টেন্ট দেখাই
     elements.participantsPanel.style.display = panel === 'participants' ? 'flex' : 'none';
     elements.chatPanel.style.display = panel === 'chat' ? 'flex' : 'none';
+    elements.filesPanel.style.display = panel === 'files' ? 'flex' : 'none';
     
     // চ্যাট ব্যাজ ক্লিয়ার
     if (panel === 'chat') {
@@ -969,8 +1006,280 @@ document.addEventListener('keydown', (e) => {
             if (e.ctrlKey || e.metaKey) break; // Ctrl+S ইগনোর
             elements.toggleScreenShare.click();
             break;
+        case 'f':
+            if (e.ctrlKey || e.metaKey) break; // Ctrl+F ইগনোর
+            openSidePanel('files');
+            break;
     }
 });
+
+// ===== ফাইল ট্রান্সফার বাটন =====
+elements.toggleFileTransfer.addEventListener('click', () => {
+    openSidePanel('files');
+});
+
+// ===== ফাইল ট্রান্সফার UI সেটআপ =====
+let selectedFiles = [];    // সিলেক্ট করা ফাইলগুলো
+let pendingOfferFileId = null; // মডাল এ কোন fileId দেখাচ্ছে
+
+function setupFileTransferUI() {
+    if (!fileTransferManager) return;
+
+    // --- ফাইল সিলেক্ট ---
+    elements.fileDropZone.addEventListener('click', () => {
+        elements.fileInput.click();
+    });
+
+    elements.fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            selectedFiles = Array.from(e.target.files);
+            showSelectedFiles();
+        }
+    });
+
+    // --- ড্র্যাগ অ্যান্ড ড্রপ ---
+    elements.fileDropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        elements.fileDropZone.classList.add('drag-active');
+    });
+    elements.fileDropZone.addEventListener('dragleave', () => {
+        elements.fileDropZone.classList.remove('drag-active');
+    });
+    elements.fileDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        elements.fileDropZone.classList.remove('drag-active');
+        if (e.dataTransfer.files.length > 0) {
+            selectedFiles = Array.from(e.dataTransfer.files);
+            showSelectedFiles();
+        }
+    });
+
+    // --- Send বাটন ---
+    elements.fileSendBtn.addEventListener('click', () => {
+        const recipientId = elements.fileRecipientSelect.value;
+        if (!recipientId) {
+            showToast('প্রাপক সিলেক্ট করুন', 'warning');
+            return;
+        }
+        if (selectedFiles.length === 0) {
+            showToast('ফাইল সিলেক্ট করুন', 'warning');
+            return;
+        }
+
+        // DataChannel ensure
+        fileTransferManager.setupDataChannel(recipientId);
+
+        // প্রতিটি ফাইল পাঠাই
+        for (const file of selectedFiles) {
+            if (file.size > 2 * 1024 * 1024 * 1024) {
+                showToast(`${file.name} 2GB এর বেশি!`, 'error');
+                continue;
+            }
+            fileTransferManager.sendFile(recipientId, file);
+        }
+
+        // Reset
+        selectedFiles = [];
+        elements.fileInput.value = '';
+        elements.fileRecipientArea.style.display = 'none';
+        elements.fileSelectArea.querySelector('.file-selected-info')?.remove();
+        showToast('ফাইল পাঠানো হচ্ছে...', 'info');
+    });
+
+    // --- File Offer Modal ---
+    elements.fileOfferAccept.addEventListener('click', () => {
+        if (pendingOfferFileId) {
+            fileTransferManager.acceptFile(pendingOfferFileId);
+            elements.fileOfferModal.style.display = 'none';
+            showToast('ফাইল গ্রহণ করা হয়েছে, ডাউনলোড শুরু হবে', 'success');
+            pendingOfferFileId = null;
+        }
+    });
+
+    elements.fileOfferReject.addEventListener('click', () => {
+        if (pendingOfferFileId) {
+            fileTransferManager.rejectFile(pendingOfferFileId);
+            elements.fileOfferModal.style.display = 'none';
+            pendingOfferFileId = null;
+        }
+    });
+
+    // --- Callbacks ---
+    fileTransferManager.onTransferOffer = (transfer) => {
+        // মডাল দেখাই
+        pendingOfferFileId = transfer.fileId;
+        elements.fileOfferTitle.textContent = `ফাইল পাঠাতে চায়`;
+        elements.fileOfferDetails.innerHTML = `
+            <strong>${transfer.fileName}</strong><br>
+            সাইজ: ${formatFileSize(transfer.fileSize)}
+        `;
+        elements.fileOfferModal.style.display = 'flex';
+        showToast('📁 নতুন ফাইল এসেছে!', 'info');
+    };
+
+    fileTransferManager.onTransferProgress = (data) => {
+        updateTransferUI(data.fileId, data);
+    };
+
+    fileTransferManager.onTransferStatusChange = (data) => {
+        updateTransferStatusUI(data.fileId, data);
+    };
+
+    fileTransferManager.onTransferComplete = (transfer) => {
+        showToast(`✅ ${transfer.fileName} ডাউনলোড সম্পূর্ণ!`, 'success');
+    };
+
+    fileTransferManager.onTransferFailed = (transfer, reason) => {
+        showToast(`❌ ${transfer.fileName} ব্যর্থ: ${reason}`, 'error');
+    };
+}
+
+function showSelectedFiles() {
+    // আগের info থাকলে মুছি
+    elements.fileSelectArea.querySelector('.file-selected-info')?.remove();
+
+    const info = document.createElement('div');
+    info.className = 'file-selected-info';
+    
+    let html = '';
+    let totalSize = 0;
+    for (const f of selectedFiles) {
+        html += `<div class="file-selected-item">
+            <span class="material-icons-round">${getFileIcon(f.type)}</span>
+            <span class="file-name">${f.name}</span>
+            <span class="file-size">${formatFileSize(f.size)}</span>
+        </div>`;
+        totalSize += f.size;
+    }
+    if (selectedFiles.length > 1) {
+        html += `<div class="file-total">মোট: ${selectedFiles.length} টি ফাইল (${formatFileSize(totalSize)})</div>`;
+    }
+    info.innerHTML = html;
+    elements.fileSelectArea.appendChild(info);
+
+    // Recipient area দেখাই
+    populateRecipients();
+    elements.fileRecipientArea.style.display = 'flex';
+}
+
+function populateRecipients() {
+    const select = elements.fileRecipientSelect;
+    // শুধু default option রাখি
+    select.innerHTML = '<option value="">— সিলেক্ট করুন —</option>';
+
+    // Participant list থেকে
+    const items = document.querySelectorAll('.participant-item');
+    items.forEach(item => {
+        const id = item.id.replace('participant-', '');
+        if (id === userId) return; // নিজেকে বাদ দিই
+        const name = item.querySelector('.participant-name')?.textContent || 'Guest';
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = name;
+        select.appendChild(option);
+    });
+}
+
+function getFileIcon(mimeType) {
+    if (!mimeType) return 'insert_drive_file';
+    if (mimeType.startsWith('image/')) return 'image';
+    if (mimeType.startsWith('video/')) return 'movie';
+    if (mimeType.startsWith('audio/')) return 'audiotrack';
+    if (mimeType.includes('pdf')) return 'picture_as_pdf';
+    if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('7z')) return 'folder_zip';
+    if (mimeType.includes('text') || mimeType.includes('document')) return 'article';
+    return 'insert_drive_file';
+}
+
+function updateTransferUI(fileId, data) {
+    let item = document.getElementById(`transfer-${fileId}`);
+    
+    if (!item) {
+        // নতুন ট্রান্সফার UI তৈরি
+        elements.fileEmptyState.style.display = 'none';
+        item = document.createElement('div');
+        item.id = `transfer-${fileId}`;
+        item.className = 'file-transfer-item';
+        item.innerHTML = `
+            <div class="ft-header">
+                <span class="material-icons-round ft-icon">${data.direction === 'send' ? 'upload' : 'download'}</span>
+                <div class="ft-info">
+                    <div class="ft-name">${data.fileName}</div>
+                    <div class="ft-meta">${formatFileSize(data.fileSize)} • ${data.direction === 'send' ? 'পাঠাচ্ছে' : 'পাচ্ছে'}</div>
+                </div>
+                <button class="ft-cancel" data-file-id="${fileId}" title="বাতিল">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="ft-progress-bar">
+                <div class="ft-progress-fill" style="width:0%"></div>
+            </div>
+            <div class="ft-stats">
+                <span class="ft-percent">0%</span>
+                <span class="ft-speed"></span>
+            </div>
+        `;
+        elements.fileTransfersList.appendChild(item);
+
+        // Cancel বাটন
+        item.querySelector('.ft-cancel').addEventListener('click', () => {
+            if (fileTransferManager) fileTransferManager.cancelTransfer(fileId);
+        });
+    }
+
+    // প্রগ্রেস আপডেট
+    const fill = item.querySelector('.ft-progress-fill');
+    const percentEl = item.querySelector('.ft-percent');
+    const speedEl = item.querySelector('.ft-speed');
+    
+    fill.style.width = data.percent + '%';
+    percentEl.textContent = data.percent + '%';
+    
+    if (data.speed > 0) {
+        speedEl.textContent = formatFileSize(data.speed) + '/s';
+    }
+}
+
+function updateTransferStatusUI(fileId, data) {
+    let item = document.getElementById(`transfer-${fileId}`);
+
+    if (!item && data.status !== TransferStatus.CANCELLED) {
+        // Status change কিন্তু item নেই → তৈরি করি
+        updateTransferUI(fileId, { ...data, percent: 0, speed: 0 });
+        item = document.getElementById(`transfer-${fileId}`);
+    }
+
+    if (!item) return;
+
+    const meta = item.querySelector('.ft-meta');
+    const fill = item.querySelector('.ft-progress-fill');
+
+    switch (data.status) {
+        case TransferStatus.OFFERING:
+            meta.textContent = `${formatFileSize(data.fileSize)} • অপেক্ষায়...`;
+            break;
+        case TransferStatus.TRANSFERRING:
+            meta.textContent = `${formatFileSize(data.fileSize)} • ${data.direction === 'send' ? 'পাঠাচ্ছে' : 'পাচ্ছে'}`;
+            break;
+        case TransferStatus.PAUSED:
+            meta.textContent = `${formatFileSize(data.fileSize)} • বিরতি (অপেক্ষায়...)`;
+            fill.classList.add('paused');
+            break;
+        case TransferStatus.COMPLETED:
+            meta.textContent = `${formatFileSize(data.fileSize)} • ✅ সম্পূর্ণ!`;
+            fill.style.width = '100%';
+            fill.classList.add('completed');
+            item.querySelector('.ft-cancel').style.display = 'none';
+            break;
+        case TransferStatus.FAILED:
+            meta.textContent = `${formatFileSize(data.fileSize)} • ❌ ব্যর্থ`;
+            fill.classList.add('failed');
+            break;
+        case TransferStatus.CANCELLED:
+            if (item) item.remove();
+            break;
+    }
+}
 
 // ===== ব্রাউজার বন্ধ করার আগে =====
 window.addEventListener('beforeunload', () => {

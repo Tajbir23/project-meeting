@@ -212,6 +212,29 @@ joinForm.addEventListener('submit', async (e) => {
     window.location.href = `/meeting/${roomCode}`;
 });
 
+// ===== ফাইল ট্রান্সফার বাটন =====
+const fileTransferBtn = document.getElementById('fileTransferBtn');
+if (fileTransferBtn) {
+    fileTransferBtn.addEventListener('click', () => {
+        const userName = userNameInput.value.trim();
+        if (!userName) {
+            showToast('প্রথমে আপনার নাম দিন', 'warning');
+            userNameInput.focus();
+            return;
+        }
+        sessionStorage.setItem('userName', userName);
+
+        // ইউনিক ট্রান্সফার কোড তৈরি
+        const transferCode = generateMeetingCode();
+
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+        }
+
+        window.location.href = `/transfer/${transferCode}`;
+    });
+}
+
 // ===== পেজ লোড হলে =====
 document.addEventListener('DOMContentLoaded', () => {
     console.log('📱 ল্যান্ডিং পেজ লোড হয়েছে');

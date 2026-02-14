@@ -1,0 +1,10 @@
+node_modules/
+android/
+ios/
+www/css/
+www/js/
+www/meeting.html
+www/index.html
+!www/index.html
+*.apk
+*.aab

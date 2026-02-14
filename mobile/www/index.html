@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QuickMeet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+            color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .loading-container {
+            text-align: center;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(102, 126, 234, 0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        h2 { font-size: 18px; margin-bottom: 8px; }
+        p { font-size: 14px; color: #888; }
+        .error-msg {
+            display: none;
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(255, 50, 50, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 50, 50, 0.2);
+        }
+        .retry-btn {
+            display: none;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <h2>QuickMeet লোড হচ্ছে...</h2>
+        <p>সার্ভারে সংযোগ করা হচ্ছে</p>
+        <div class="error-msg" id="errorMsg">
+            <p>সার্ভারে সংযোগ করতে পারছি না। ইন্টারনেট সংযোগ চেক করুন।</p>
+        </div>
+        <button class="retry-btn" id="retryBtn" onclick="loadApp()">আবার চেষ্টা করুন</button>
+    </div>
+
+    <script>
+        const SERVER_URL = 'https://quickmeet.genuinesoftmart.store';
+
+        async function loadApp() {
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('retryBtn').style.display = 'none';
+
+            try {
+                const response = await fetch(SERVER_URL + '/api/health', { 
+                    method: 'GET',
+                    mode: 'no-cors',
+                    cache: 'no-cache'
+                });
+                // Server reachable, redirect
+                window.location.href = SERVER_URL;
+            } catch (error) {
+                // Try anyway - no-cors might not give proper response
+                window.location.href = SERVER_URL;
+            }
+        }
+
+        // Auto-load after a brief delay
+        setTimeout(loadApp, 1500);
+
+        // If page doesn't redirect in 10s, show error
+        setTimeout(() => {
+            document.getElementById('errorMsg').style.display = 'block';
+            document.getElementById('retryBtn').style.display = 'inline-block';
+        }, 10000);
+    </script>
+</body>
+</html>

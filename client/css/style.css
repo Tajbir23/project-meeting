@@ -1211,6 +1211,336 @@ video {
 .toast.warning .toast-icon { color: var(--accent-yellow); }
 .toast.info .toast-icon { color: var(--primary-light); }
 
+/* ====================================================
+   ===== P2P ফাইল ট্রান্সফার UI ====================
+   ==================================================== */
+
+/* --- File Panel Header --- */
+.file-panel-header {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-light);
+}
+.file-panel-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.file-panel-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* --- File Drop Zone --- */
+.file-select-area {
+    padding: var(--spacing-md);
+}
+.file-drop-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg) var(--spacing-md);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(255,255,255,0.02);
+}
+.file-drop-zone:hover,
+.file-drop-zone.drag-active {
+    border-color: var(--primary-light);
+    background: rgba(102, 126, 234, 0.08);
+}
+.file-drop-zone .material-icons-round {
+    font-size: 2.5rem;
+    color: var(--primary-light);
+    display: block;
+    margin-bottom: 8px;
+}
+.file-drop-zone p {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+.file-drop-hint {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+/* --- Selected Files --- */
+.file-selected-info {
+    margin-top: var(--spacing-sm);
+}
+.file-selected-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+}
+.file-selected-item .material-icons-round {
+    font-size: 1.1rem;
+    color: var(--primary-light);
+}
+.file-selected-item .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.file-selected-item .file-size {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    white-space: nowrap;
+}
+.file-total {
+    text-align: right;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    padding-top: 4px;
+}
+
+/* --- Recipient Selector --- */
+.file-recipient {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 var(--spacing-md) var(--spacing-md);
+    align-items: center;
+}
+.file-recipient label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    width: 100%;
+}
+.file-recipient select {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    outline: none;
+}
+.file-recipient select:focus {
+    border-color: var(--primary-light);
+}
+.file-send-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+.file-send-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+.file-send-btn .material-icons-round {
+    font-size: 1rem;
+}
+
+/* --- Transfer List --- */
+.file-transfers-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+.file-empty-state {
+    text-align: center;
+    padding: var(--spacing-xl) 0;
+    color: var(--text-secondary);
+}
+.file-empty-state .material-icons-round {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+.file-empty-state p {
+    font-size: 0.8rem;
+}
+
+/* --- Transfer Item --- */
+.file-transfer-item {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    margin-bottom: 8px;
+}
+.ft-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.ft-icon {
+    color: var(--primary-light);
+    font-size: 1.2rem;
+}
+.ft-info {
+    flex: 1;
+    min-width: 0;
+}
+.ft-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ft-meta {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+.ft-cancel {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+}
+.ft-cancel:hover {
+    color: var(--accent-red);
+    background: rgba(255, 82, 82, 0.1);
+}
+.ft-cancel .material-icons-round {
+    font-size: 1rem;
+}
+
+/* --- Progress Bar --- */
+.ft-progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+.ft-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+.ft-progress-fill.paused {
+    background: var(--accent-yellow);
+    animation: pulse-bar 1.5s infinite;
+}
+.ft-progress-fill.completed {
+    background: var(--accent-green);
+}
+.ft-progress-fill.failed {
+    background: var(--accent-red);
+}
+@keyframes pulse-bar {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* --- Transfer Stats --- */
+.ft-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+/* --- File Offer Modal --- */
+.file-offer-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+    padding: 20px;
+}
+.file-offer-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border: 1px solid var(--border-light);
+}
+.file-offer-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+.file-offer-icon .material-icons-round {
+    font-size: 1.6rem;
+    color: white;
+}
+.file-offer-card h3 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+.file-offer-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+.file-offer-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+.file-offer-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+.file-offer-btn .material-icons-round {
+    font-size: 1.1rem;
+}
+.file-offer-btn.accept {
+    background: var(--accent-green);
+    color: white;
+}
+.file-offer-btn.accept:hover {
+    background: #00c853;
+    transform: translateY(-1px);
+}
+.file-offer-btn.reject {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.file-offer-btn.reject:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
     .side-panel.open + .video-grid-container {
@@ -1414,5 +1744,561 @@ video {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--border-color);
+}
+
+/* ============================================
+   STANDALONE FILE TRANSFER PAGE STYLES
+   ============================================ */
+
+.transfer-page {
+    background: var(--bg-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.transfer-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Header */
+.transfer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.transfer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 16px;
+}
+
+.transfer-logo .material-icons-round {
+    font-size: 28px;
+    color: var(--primary-light);
+}
+
+.transfer-logo strong {
+    color: var(--primary-light);
+}
+
+.transfer-room-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-tertiary);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.transfer-room-info .material-icons-round {
+    font-size: 16px;
+    color: var(--accent-green);
+}
+
+/* Main Area - 3 Panel Layout */
+.transfer-main {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr 0.7fr;
+    gap: 16px;
+    padding: 16px;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* Common Panel */
+.transfer-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.panel-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.panel-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.panel-card-header .material-icons-round {
+    font-size: 22px;
+    color: var(--primary-light);
+}
+
+.panel-card-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.panel-card-header .status-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.panel-card-header .status-badge.connected {
+    background: rgba(30, 142, 62, 0.15);
+    color: var(--accent-green);
+}
+
+/* Drop Zone (Transfer Page) */
+.tf-drop-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    margin: 16px;
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+}
+
+.tf-drop-zone:hover,
+.tf-drop-zone.drag-over {
+    border-color: var(--primary-light);
+    background: rgba(66, 133, 244, 0.05);
+}
+
+.tf-drop-icon {
+    font-size: 42px !important;
+    color: var(--primary-light);
+    margin-bottom: 8px;
+}
+
+.tf-drop-zone h4 {
+    color: var(--text-primary);
+    font-size: 15px;
+    margin: 4px 0;
+}
+
+.tf-drop-zone p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin: 2px 0;
+}
+
+.tf-drop-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+/* Selected Files */
+.tf-selected-files {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tf-files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.tf-file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.tf-file-item .material-icons-round {
+    font-size: 20px;
+    color: var(--primary-light);
+}
+
+.tf-file-item .tf-file-size {
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.tf-file-item .tf-file-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+}
+
+.tf-file-item .tf-file-remove:hover {
+    color: var(--accent-red);
+}
+
+/* Recipient Row */
+.tf-recipient-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tf-recipient-row label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.tf-recipient-row select {
+    flex: 1;
+    padding: 8px 10px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+}
+
+.tf-recipient-row select:focus {
+    border-color: var(--primary-light);
+}
+
+/* Send Button */
+.tf-send-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.tf-send-btn:hover:not(:disabled) {
+    background: var(--primary-dark);
+}
+
+.tf-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Transfers List (Activity Panel) */
+.tf-transfers {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.tf-empty,
+.tf-empty-peers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.tf-empty .material-icons-round,
+.tf-empty-peers .material-icons-round {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.tf-empty h4 {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin: 4px 0;
+}
+
+.tf-empty p,
+.tf-empty-peers p {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Transfer Item */
+.tf-transfer-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.tf-transfer-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tf-transfer-item .tf-transfer-icon {
+    font-size: 22px;
+    color: var(--primary-light);
+}
+
+.tf-transfer-item .tf-transfer-name {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tf-transfer-item .tf-transfer-size {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.tf-transfer-item .tf-transfer-status {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.tf-transfer-item .tf-transfer-status.completed {
+    color: var(--accent-green);
+}
+
+.tf-transfer-item .tf-transfer-status.error {
+    color: var(--accent-red);
+}
+
+/* Progress Bar (Transfer Page) */
+.tf-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--bg-primary);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.tf-progress-bar .tf-progress-fill {
+    height: 100%;
+    background: var(--primary-light);
+    border-radius: 2px;
+    transition: width .3s;
+}
+
+.tf-progress-bar .tf-progress-fill.complete {
+    background: var(--accent-green);
+}
+
+/* Transfer Cancel Button */
+.tf-transfer-cancel {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+}
+
+.tf-transfer-cancel:hover {
+    color: var(--accent-red);
+}
+
+/* Share Section */
+.tf-share-section {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.tf-share-section p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.tf-share-row {
+    display: flex;
+    gap: 6px;
+}
+
+.tf-share-row input {
+    flex: 1;
+    padding: 8px 10px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 12px;
+    outline: none;
+}
+
+.tf-copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.tf-copy-btn:hover {
+    background: var(--primary-dark);
+}
+
+/* Peers List */
+.tf-peers-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.tf-peer-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    margin-bottom: 6px;
+}
+
+.tf-peer-avatar {
+    width: 36px;
+    height: 36px;
+    background: var(--primary-bg);
+    color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.tf-peer-info {
+    flex: 1;
+}
+
+.tf-peer-name {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.tf-peer-status {
+    font-size: 11px;
+    color: var(--accent-green);
+}
+
+/* Connection Overlay */
+.connection-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.connection-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--bg-tertiary);
+    border-top-color: var(--primary-light);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== Transfer Page Responsive ===== */
+@media (max-width: 900px) {
+    .transfer-main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+        overflow-y: auto;
+    }
+
+    .transfer-panel {
+        min-height: auto;
+    }
+
+    .panel-card {
+        flex: none;
+    }
+
+    .tf-drop-zone {
+        padding: 20px 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .transfer-header {
+        padding: 10px 14px;
+    }
+
+    .transfer-logo span:last-child {
+        display: none;
+    }
+
+    .transfer-main {
+        padding: 10px;
+        gap: 10px;
+    }
 }
 

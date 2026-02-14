@@ -47,6 +47,7 @@ export class WebRTCManager {
         this.onRemoteStream = null;      // নতুন রিমোট স্ট্রিম এলে
         this.onRemoteStreamRemoved = null; // রিমোট স্ট্রিম গেলে
         this.onConnectionStateChange = null;
+        this.onDataChannel = null;       // Remote DataChannel পেলে
         
         console.log('🔌 WebRTC Manager তৈরি হয়েছে');
     }
@@ -176,6 +177,16 @@ export class WebRTCManager {
             // শুধু initiator offer পাঠায়
             if (isInitiator) {
                 await this.createAndSendOffer(userId);
+            }
+        };
+
+        /**
+         * Remote DataChannel পেলে (ফাইল ট্রান্সফারের জন্য)
+         */
+        peerConnection.ondatachannel = (event) => {
+            console.log(`📡 Remote DataChannel পাওয়া গেছে (${userId}): ${event.channel.label}`);
+            if (this.onDataChannel) {
+                this.onDataChannel(userId, event.channel);
             }
         };
         

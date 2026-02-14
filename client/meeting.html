@@ -109,6 +109,13 @@
                     <span class="material-icons-round">more_vert</span>
                     <span class="btn-label">আরও</span>
                 </button>
+
+                <!-- File Transfer -->
+                <button class="control-btn" id="toggleFileTransfer" title="ফাইল পাঠান (F)">
+                    <span class="material-icons-round icon-on">attach_file</span>
+                    <span class="material-icons-round icon-off">attach_file</span>
+                    <span class="btn-label">ফাইল</span>
+                </button>
                 
                 <!-- Leave Call -->
                 <button class="control-btn leave-btn" id="leaveCall" title="কল ছেড়ে দিন">
@@ -141,6 +148,10 @@
                     <span class="material-icons-round">chat</span>
                     চ্যাট
                 </button>
+                <button class="panel-tab" data-panel="files">
+                    <span class="material-icons-round">folder</span>
+                    ফাইল
+                </button>
             </div>
             
             <!-- Participants Panel -->
@@ -166,6 +177,44 @@
                     <button class="send-btn" id="sendChatBtn">
                         <span class="material-icons-round">send</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- File Transfer Panel -->
+            <div class="panel-content" id="filesPanel" style="display: none;">
+                <div class="file-panel-header">
+                    <h3>ফাইল ট্রান্সফার</h3>
+                    <p class="file-panel-subtitle">P2P — সরাসরি পাঠান, কোনো সার্ভার ছাড়া</p>
+                </div>
+                
+                <!-- File Select -->
+                <div class="file-select-area" id="fileSelectArea">
+                    <input type="file" id="fileInput" style="display:none" multiple>
+                    <div class="file-drop-zone" id="fileDropZone">
+                        <span class="material-icons-round">cloud_upload</span>
+                        <p>ড্র্যাগ করুন অথবা ক্লিক করুন</p>
+                        <span class="file-drop-hint">সর্বোচ্চ 2GB পর্যন্ত</span>
+                    </div>
+                </div>
+
+                <!-- Recipient Selector (কাকে পাঠাবে) -->
+                <div class="file-recipient" id="fileRecipientArea" style="display:none">
+                    <label>কাকে পাঠাবেন?</label>
+                    <select id="fileRecipientSelect">
+                        <option value="">— সিলেক্ট করুন —</option>
+                    </select>
+                    <button class="file-send-btn" id="fileSendBtn">
+                        <span class="material-icons-round">send</span>
+                        পাঠান
+                    </button>
+                </div>
+
+                <!-- Active Transfers -->
+                <div class="file-transfers-list" id="fileTransfersList">
+                    <div class="file-empty-state" id="fileEmptyState">
+                        <span class="material-icons-round">swap_horiz</span>
+                        <p>কোনো ট্রান্সফার চলছে না</p>
+                    </div>
                 </div>
             </div>
             
@@ -204,6 +253,25 @@
     <div id="toast" class="toast">
         <span class="toast-icon material-icons-round"></span>
         <span class="toast-message"></span>
+    </div>
+
+    <!-- File Offer Modal (ফাইল পাবার অনুরোধ) -->
+    <div class="file-offer-modal" id="fileOfferModal" style="display:none">
+        <div class="file-offer-card">
+            <div class="file-offer-icon">
+                <span class="material-icons-round">description</span>
+            </div>
+            <h3 id="fileOfferTitle">ফাইল পাঠাতে চায়</h3>
+            <p id="fileOfferDetails"></p>
+            <div class="file-offer-actions">
+                <button class="file-offer-btn accept" id="fileOfferAccept">
+                    <span class="material-icons-round">check</span> গ্রহণ করুন
+                </button>
+                <button class="file-offer-btn reject" id="fileOfferReject">
+                    <span class="material-icons-round">close</span> বাতিল
+                </button>
+            </div>
+        </div>
     </div>
     
     <!-- Socket.IO Client -->
