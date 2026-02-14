@@ -1,0 +1,22 @@
+{
+  "name": "quickmeet-desktop",
+  "version": "1.0.0",
+  "description": "QuickMeet - ভিডিও মিটিং ডেস্কটপ অ্যাপ",
+  "main": "main.js",
+  "author": "QuickMeet",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win --config electron-builder.cjs",
+    "build:portable": "electron-builder --win portable --config electron-builder.cjs",
+    "build:installer": "electron-builder --win nsis --config electron-builder.cjs"
+  },
+  "dependencies": {
+    "electron-updater": "^6.1.7"
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  }
+}
